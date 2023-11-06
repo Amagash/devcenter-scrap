@@ -7,13 +7,14 @@ from tqdm import tqdm
 
 def upload_to_s3(product_name):
     s3 = boto3.client('s3')
-    s3.upload_file(f"{product_name}.html", "knowledge-base-aws-products", f"{product_name}.html")
+    s3.upload_file(f"{product_name}_desc.html", "knowledge-base-aws-products", f"{product_name}_desc.html")
     s3.upload_file(f"{product_name}_faq.html", "knowledge-base-aws-products", f"{product_name}_faq.html")
 
 def create_file(product_name, url, content):
     f = open(f"{product_name}_{content}.html", "w")
     f.write(requests.get(url).text)
     f.close()
+
 def get_data(url):
     data = []
     raw_data = requests.get(url).json()
@@ -25,7 +26,6 @@ def get_data(url):
         create_file(product_name, product_faq, "faq")
         upload_to_s3(product_name)
         data.append({"product_name": product_name, "product_url": product_url, "product_faq": product_faq})
-    print (len(data))
     return data
 
 
