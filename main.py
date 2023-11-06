@@ -25,9 +25,6 @@ def get_data(url):
         create_file(product_name, product_url, "desc")
         create_file(product_name, product_faq, "faq")
         upload_to_s3(product_name)
-        data.append({"product_name": product_name, "product_url": product_url, "product_faq": product_faq})
-    return data
-
 
 if __name__ == "__main__":
 
