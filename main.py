@@ -1,15 +1,14 @@
 import requests 
-from bs4 import BeautifulSoup
-from tqdm import tqdm
 import json
 import re
-
+import boto3
+from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 def get_data(url):
     data = []
     raw_data = requests.get(url).json()
-    i=1
-    for item in raw_data["items"][:3]:
+    for item in tqdm(raw_data["items"]):
         product_url = item["item"]["additionalFields"]["productUrl"]
         product_name = item["item"]["name"]
         product_faq = product_url.replace('?did=ap_card&trk=ap_card', 'faqs')
@@ -19,10 +18,11 @@ def get_data(url):
         f_faq = open(f"{product_name}_faq.html", "w")
         f_faq.write(requests.get(product_faq).text)
         f_faq.close()
-
-        i+=1
+        s3 = boto3.client('s3')
+        s3.upload_file(f"{product_name}.html", "knowledge-base-aws-products", f"{product_name}.html")
+        s3.upload_file(f"{product_name}_faq.html", "knowledge-base-aws-products", f"{product_name}_faq.html")
         data.append({"product_name": product_name, "product_url": product_url, "product_faq": product_faq})
-    print (data)
+    print (len(data))
     return data
 
 
