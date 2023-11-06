@@ -9,7 +9,7 @@ def upload_to_s3(product_name):
     s3 = boto3.client('s3')
     s3.upload_file(f"{product_name}_desc.html", "knowledge-base-aws-products", f"{product_name}_desc.html")
     s3.upload_file(f"{product_name}_faq.html", "knowledge-base-aws-products", f"{product_name}_faq.html")
-    s3.upload_file(f"{product_name}_features.html", "knowledge-base-aws-products", f"{product_name}_feat.html")
+    s3.upload_file(f"{product_name}_feat.html", "knowledge-base-aws-products", f"{product_name}_feat.html")
 
 def create_file(product_name, url, content):
     f = open(f"{product_name}_{content}.html", "w")
