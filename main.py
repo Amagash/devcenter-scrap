@@ -5,6 +5,15 @@ import boto3
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+def upload_to_s3(product_name):
+    s3 = boto3.client('s3')
+    s3.upload_file(f"{product_name}.html", "knowledge-base-aws-products", f"{product_name}.html")
+    s3.upload_file(f"{product_name}_faq.html", "knowledge-base-aws-products", f"{product_name}_faq.html")
+
+def create_file(product_name, url, content):
+    f = open(f"{product_name}_{content}.html", "w")
+    f.write(requests.get(url).text)
+    f.close()
 def get_data(url):
     data = []
     raw_data = requests.get(url).json()
@@ -12,15 +21,9 @@ def get_data(url):
         product_url = item["item"]["additionalFields"]["productUrl"]
         product_name = item["item"]["name"]
         product_faq = product_url.replace('?did=ap_card&trk=ap_card', 'faqs')
-        f_product = open(f"{product_name}.html", "w")
-        f_product.write(requests.get(product_url).text)
-        f_product.close()
-        f_faq = open(f"{product_name}_faq.html", "w")
-        f_faq.write(requests.get(product_faq).text)
-        f_faq.close()
-        s3 = boto3.client('s3')
-        s3.upload_file(f"{product_name}.html", "knowledge-base-aws-products", f"{product_name}.html")
-        s3.upload_file(f"{product_name}_faq.html", "knowledge-base-aws-products", f"{product_name}_faq.html")
+        create_file(product_name, product_url, "desc")
+        create_file(product_name, product_faq, "faq")
+        upload_to_s3(product_name)
         data.append({"product_name": product_name, "product_url": product_url, "product_faq": product_faq})
     print (len(data))
     return data
