@@ -9,6 +9,7 @@ def upload_to_s3(product_name):
     s3 = boto3.client('s3')
     s3.upload_file(f"{product_name}_desc.html", "knowledge-base-aws-products", f"{product_name}_desc.html")
     s3.upload_file(f"{product_name}_faq.html", "knowledge-base-aws-products", f"{product_name}_faq.html")
+    s3.upload_file(f"{product_name}_features.html", "knowledge-base-aws-products", f"{product_name}_feat.html")
 
 def create_file(product_name, url, content):
     f = open(f"{product_name}_{content}.html", "w")
@@ -22,8 +23,10 @@ def get_data(url):
         product_url = item["item"]["additionalFields"]["productUrl"]
         product_name = item["item"]["name"]
         product_faq = product_url.replace('?did=ap_card&trk=ap_card', 'faqs')
+        product_features = product_url.replace('?did=ap_card&trk=ap_card', 'features')
         create_file(product_name, product_url, "desc")
         create_file(product_name, product_faq, "faq")
+        create_file(product_name, product_features, "feat")
         upload_to_s3(product_name)
 
 if __name__ == "__main__":
